@@ -3,25 +3,25 @@ module ModVHiggs
   use ModParameters
   implicit none
   private
-  double precision, parameter :: T3lL= -0.5d0
-  double precision, parameter :: T3lR=  0d0
-  double precision, parameter :: T3nL=  0.5d0
-  double precision, parameter :: T3uL= 0.5d0
-  double precision, parameter :: T3uR= 0d0
-  double precision, parameter :: T3dL= -0.5d0
-  double precision, parameter :: T3dR= 0d0
-  double precision, parameter :: QlL = -1d0
-  double precision, parameter :: QlR = -1d0
-  double precision, parameter :: QnL =  0d0
-  double precision, parameter :: QuL = 0.66666666666666666666666666667d0
-  double precision, parameter :: QuR = 0.66666666666666666666666666667d0
-  double precision, parameter :: QdL = -0.33333333333333333333333333333d0
-  double precision, parameter :: QdR = -0.33333333333333333333333333333d0
+  real(8), parameter :: T3lL= -0.5d0
+  real(8), parameter :: T3lR=  0d0
+  real(8), parameter :: T3nL=  0.5d0
+  real(8), parameter :: T3uL= 0.5d0
+  real(8), parameter :: T3uR= 0d0
+  real(8), parameter :: T3dL= -0.5d0
+  real(8), parameter :: T3dR= 0d0
+  real(8), parameter :: QlL = -1d0
+  real(8), parameter :: QlR = -1d0
+  real(8), parameter :: QnL =  0d0
+  real(8), parameter :: QuL = 0.66666666666666666666666666667d0
+  real(8), parameter :: QuR = 0.66666666666666666666666666667d0
+  real(8), parameter :: QdL = -0.33333333333333333333333333333d0
+  real(8), parameter :: QdR = -0.33333333333333333333333333333d0
 
   !spin-0 couplings
-  double precision, parameter :: gFFS=1d0
-  double precision, parameter :: gFFP=0d0
-  double precision, parameter :: b_Yukawa=4.18d0
+  real(8), parameter :: gFFS=1d0
+  real(8), parameter :: gFFP=0d0
+  real(8), parameter :: b_Yukawa=4.18d0*GeV
 
   !----- notation for subroutines
   public :: EvalAmp_VHiggs
@@ -30,17 +30,18 @@ contains
 
 
 
-  subroutine EvalAmp_VHiggs(yRnd,beam_id,id,beam_h,helicity,beam_momentum,four_momentum,inv_mass,mass,me2)
-      real(8), intent(in) :: yRnd(1:20)
-      real(8), intent(in) :: beam_momentum(2,4),four_momentum(7,4)
-      real(8), intent(in) :: inv_mass(7)
+  subroutine EvalAmp_VHiggs(id,helicity,MomExt,inv_mass,mass,me2)
+      real(8), intent(in) :: MomExt(1:4,1:9) !beam_momentum(2,4),four_momentum(7,4)
+      !real(8) :: MomExt(1:4,1:9)
+      real(8), intent(in) :: inv_mass(9)
+      !real(8) :: inv_mass(9)
       real(8), intent(out) :: me2
-      double precision, intent(in) :: helicity(7), beam_h(2)
-      double precision, intent(in) ::  mass(7,2) !(mass, width)
-      integer, intent(in) ::  beam_id(2), id(7)
-      double complex amplitude
+      real(8), intent(in) :: helicity(9)!, beam_h(2)
+      real(8), intent(in) ::  mass(9,2) !(mass, width)
+      integer, intent(in) ::  id(9)
+      complex(8) amplitude
 
-      amplitude=MATRIXELEMENT0(four_momentum,inv_mass,mass,beam_momentum,helicity,beam_h,id,beam_id)
+      amplitude=MATRIXELEMENT0(MomExt,inv_mass,mass,helicity,id)
       me2=dble(amplitude*dconjg(amplitude))
 
     return
@@ -61,123 +62,123 @@ contains
 
 !
 
-      double complex function MATRIXELEMENT0(four_momentum,inv_mass,mass,beam_momentum,helicity,beam_h,id,beam_id)
+      complex(8) function MATRIXELEMENT0(MomExt,inv_mass,mass,helicity,id)
 
       implicit none
 
-      double complex dMATRIXELEMENT
-      double precision, intent(in) :: four_momentum(7,4)
-      double precision, intent(in) :: inv_mass(7)
-      double precision, intent(in) ::  mass(7,2)
-      double precision, intent(in) ::  beam_momentum(2,4)
-      double precision, intent(in) ::  helicity(7), beam_h(2) !helicities
-      integer, intent(in) ::  id(7), beam_id(2)
+      complex(8) dMATRIXELEMENT
+      real(8), intent(in) :: MomExt(1:4,1:9) !,four_momentum(7,4)
+      real(8), intent(in) :: inv_mass(9)
+      real(8), intent(in) ::  mass(9,2)
+      !real(8), intent(in) ::  beam_momentum(2,4)
+      real(8), intent(in) ::  helicity(9)!, beam_h(2) !helicities
+      integer, intent(in) ::  id(9)!, beam_id(2)
 
       integer mu1,mu2,mu3,mu4,lambda1,lambda2
-      double complex PVVX0P      
-      double complex Vcurrent1(4), Acurrent1(4), current1(4), Vcurrent2(4)
-      double complex Acurrent2(4), current2(4),POL1(3,4), POL2(3,4)
-      double complex g_mu_nu(4,4), pp(4,4), epp(4,4)
-      double complex VVX0(4,4)
-      double complex PROP1, PROP2, PROP3, qq, gVVP, gVVS1, gVVS2, gFFZ, gFFW
-      double complex ghz1_dyn,ghz2_dyn,ghz3_dyn,ghz4_dyn
-      double precision q3_q3,q4_q4
+      complex(8) PVVX0P      
+      complex(8) Vcurrent1(4), Acurrent1(4), current1(4), Vcurrent2(4)
+      complex(8) Acurrent2(4), current2(4),POL1(3,4), POL2(3,4)
+      complex(8) g_mu_nu(4,4), pp(4,4), epp(4,4)
+      complex(8) VVX0(4,4)
+      complex(8) PROP1, PROP2, PROP3, qq, gVVP, gVVS1, gVVS2, gFFZ, gFFW
+      complex(8) ghz1_dyn,ghz2_dyn,ghz3_dyn,ghz4_dyn
+      real(8) q3_q3,q4_q4
 
 
 
-      gFFZ = (0d0,1d0)*dsqrt(4d0*pi*alpha_QED/(1d0-sitW*2))/sitW
+      gFFZ = (0d0,1d0)*dsqrt(4d0*pi*alpha_QED/(1d0-sitW**2))/sitW
       gFFW = (0d0,1d0)*dsqrt(2d0*pi*alpha_QED)/sitW
 !qq = s in the paper      
-      qq=-four_momentum(1,1)*four_momentum(2,1) +four_momentum(1,2)*four_momentum(2,2) +four_momentum(1,3)*four_momentum(2,3) +four_momentum(1,4)*four_momentum(2,4)
+      qq=-MomExt(1,3)*MomExt(1,4) +MomExt(2,3)*MomExt(2,4) +MomExt(3,3)*MomExt(3,4) +MomExt(4,3)*MomExt(4,4)
 !narrow-width approximation
 !      qq=(H_mass**2-Z_mass**2-(inv_mass(1)**2))/2d0
 !     print *,qq
 
-      PROP1 = PROPAGATOR(inv_mass(1),mass(1,1),mass(1,2))
-      PROP2 = PROPAGATOR(inv_mass(2),mass(2,1),mass(2,2))
-      PROP3 = PROPAGATOR(inv_mass(3),mass(3,1),mass(3,2))
+      PROP1 = PROPAGATOR(inv_mass(3),mass(3,1),mass(3,2))
+      PROP2 = PROPAGATOR(inv_mass(4),mass(4,1),mass(4,2))
+      PROP3 = PROPAGATOR(inv_mass(5),mass(5,1),mass(5,2))
 
-      if(beam_id(1).gt.0)then
-        call FFV(beam_id(2), beam_momentum(2,:), beam_h(2), beam_id(1), beam_momentum(1,:), beam_h(1), Vcurrent1)
-        if((beam_id(1)+beam_id(2)).eq.0)then
-          call FFA(beam_id(2), beam_momentum(2,:), beam_h(2), beam_id(1), beam_momentum(1,:), beam_h(1), Acurrent1)
+      if(id(1).gt.0)then
+        call FFV(id(2), MomExt(:,2), helicity(2), id(1), MomExt(:,1), helicity(1), Vcurrent1)
+        if((id(1)+id(2)).eq.0)then
+          call FFA(id(2), MomExt(:,2), helicity(2), id(1), MomExt(:,1), helicity(1), Acurrent1)
         endif
       else
-        call FFV(beam_id(1), beam_momentum(1,:), beam_h(1), beam_id(2), beam_momentum(2,:), beam_h(2), Vcurrent1)
-        if((beam_id(1)+beam_id(2)).eq.0)then
-          call FFA(beam_id(1), beam_momentum(1,:), beam_h(1), beam_id(2), beam_momentum(2,:), beam_h(2), Acurrent1)
+        call FFV(id(1), MomExt(:,1), helicity(1), id(2), MomExt(:,2), helicity(2), Vcurrent1)
+        if((id(1)+id(2)).eq.0)then
+          call FFA(id(1), MomExt(:,1), helicity(1), id(2), MomExt(:,2), helicity(2), Acurrent1)
         endif
       endif
 
-      if(id(4).gt.0)then
-        call FFV(id(4), four_momentum(4,:), helicity(4), id(5), four_momentum(5,:), helicity(5), Vcurrent2)
-        if((id(4)+id(5)).eq.0)then
-          call FFA(id(4), four_momentum(4,:), helicity(4), id(5), four_momentum(5,:), helicity(5), Acurrent2)
+      if(id(6).gt.0)then
+        call FFV(id(6), MomExt(:,6), helicity(6), id(7), MomExt(:,7), helicity(7), Vcurrent2)
+        if((id(6)+id(7)).eq.0)then
+          call FFA(id(6), MomExt(:,6), helicity(6), id(7), MomExt(:,7), helicity(7), Acurrent2)
         endif
       else
-        call FFV(id(5), four_momentum(5,:), helicity(5), id(4), four_momentum(4,:), helicity(4), Vcurrent2)
-        if((id(4)+id(5)).eq.0)then
-          call FFA(id(5), four_momentum(5,:), helicity(5), id(4), four_momentum(4,:), helicity(4), Acurrent2)
+        call FFV(id(7), MomExt(:,7), helicity(7), id(6), MomExt(:,6), helicity(6), Vcurrent2)
+        if((id(6)+id(7)).eq.0)then
+          call FFA(id(7), MomExt(:,7), helicity(7), id(6), MomExt(:,6), helicity(6), Acurrent2)
         endif
       endif
-
-
 
 !WH
-      if((beam_id(1)+beam_id(2)).ne.0)then
-        if((beam_id(1)*beam_h(1)).le.0d0)then
-          current1=Vcurrent1*gFFW*CKM(abs(beam_id(1)),abs(beam_id(2)))
+      if((id(1)+id(2)).ne.0)then
+        if((id(1)*helicity(1)).le.0d0)then
+          current1=Vcurrent1*gFFW*CKM(id(1),id(2))
         else
           current1=0d0
         endif
-        current2=Vcurrent2*gFFW*CKM(abs(id(4)),abs(id(5)))
+        current2=Vcurrent2*gFFW*CKM(id(6),id(7))
 
 !ZH
-      else if((abs(beam_id(1)).eq.11).or.(abs(beam_id(1)).eq.13))then
+      else if((abs(id(1)).eq.11).or.(abs(id(1)).eq.13))then
 !        print *, beam_id, beam_h
 !e+ e- Z vertex for incoming states
-        if((beam_id(1)*beam_h(1)).gt.0d0)then
+        if((id(1)*helicity(1)).gt.0d0)then
           current1=(0.5d0*T3lR - QlR*sitW**2) *Vcurrent1 -(0.5d0*T3lR)*Acurrent1
         else
           current1=(0.5d0*T3lL - QlL*sitW**2) *Vcurrent1 -(0.5d0*T3lL)*Acurrent1
         endif
         current1=current1*gFFZ
+
 !u u~ Z vertex for incoming states
-      else if((abs(beam_id(1)).eq.2).or.(abs(beam_id(1)).eq.4))then
-        if((beam_id(1)*beam_h(1)).gt.0d0)then
+      else if((abs(id(1)).eq.2).or.(abs(id(1)).eq.4))then
+        if((id(1)*helicity(1)).gt.0d0)then
           current1=(0.5d0*T3uR - QuR*sitW**2) *Vcurrent1 -(0.5d0*T3uR)*Acurrent1
         else
           current1=(0.5d0*T3uL - QuL*sitW**2) *Vcurrent1 -(0.5d0*T3uL)*Acurrent1
         endif
         current1=current1*gFFZ
 !d d~ Z vertex for incoming states
-      else if((abs(beam_id(1)).eq.1).or.(abs(beam_id(1)).eq.3).or.(abs(beam_id(1)).eq.5))then
-        if((beam_id(1)*beam_h(1)).gt.0d0)then
+      else if((abs(id(1)).eq.1).or.(abs(id(1)).eq.3).or.(abs(id(1)).eq.5))then
+        if((id(1)*helicity(1)).gt.0d0)then
           current1=(0.5d0*T3dR - QdR*sitW**2) *Vcurrent1 -(0.5d0*T3dR)*Acurrent1
         else
           current1=(0.5d0*T3dL - QdL*sitW**2) *Vcurrent1 -(0.5d0*T3dL)*Acurrent1
         endif
         current1=current1*gFFZ
 
-        else
-        current1=0d0
-        print *, "invalid incoming state"
+      else
+      current1=0d0
+      print *, "invalid incoming state"
 
       endif
 
 !f+ f- Z vertex for final states
-      if((id(4)+id(5)).eq.0)then
+      if((id(6)+id(7)).eq.0)then
 !l+ l- Z vertex for final state
-        if((abs(id(4)).eq.11).or.(abs(id(4)).eq.13).or.(abs(id(4)).eq.15))then
-          if((id(4)*helicity(4)).gt.0d0)then
+        if((abs(id(6)).eq.11).or.(abs(id(6)).eq.13).or.(abs(id(6)).eq.15))then
+          if((id(6)*helicity(6)).gt.0d0)then
             current2=(0.5d0*T3lR - QlR*sitW**2) *Vcurrent2 -(0.5d0*T3lR)*Acurrent2
           else
             current2=(0.5d0*T3lL - QlL*sitW**2) *Vcurrent2 -(0.5d0*T3lL)*Acurrent2
           endif
           current2=current2*gFFZ*dsqrt(scale_alpha_Z_ll)
+
 !u u~ Z vertex for final state
-        else if((abs(id(4)).eq.2).or.(abs(id(4)).eq.4))then
-          if((id(4)*helicity(4)).gt.0d0)then
+        else if((abs(id(6)).eq.2).or.(abs(id(6)).eq.4))then
+          if((id(6)*helicity(6)).gt.0d0)then
             current2=(0.5d0*T3uR - QuR*sitW**2) *Vcurrent2 -(0.5d0*T3uR)*Acurrent2
           else
             current2=(0.5d0*T3uL - QuL*sitW**2) *Vcurrent2 -(0.5d0*T3uL)*Acurrent2
@@ -185,8 +186,8 @@ contains
           current2=current2*gFFZ*dsqrt(scale_alpha_Z_uu)
 
 !d d~ Z vertex for final state
-        else if((abs(id(4)).eq.1).or.(abs(id(4)).eq.3).or.(abs(id(4)).eq.5))then
-          if((id(4)*helicity(4)).gt.0d0)then
+        else if((abs(id(6)).eq.1).or.(abs(id(6)).eq.3).or.(abs(id(6)).eq.5))then
+          if((id(6)*helicity(6)).gt.0d0)then
             current2=(0.5d0*T3dR - QdR*sitW**2) *Vcurrent2 -(0.5d0*T3dR)*Acurrent2
           else
             current2=(0.5d0*T3dL - QdL*sitW**2) *Vcurrent2 -(0.5d0*T3dL)*Acurrent2
@@ -194,7 +195,7 @@ contains
           current2=current2*gFFZ*dsqrt(scale_alpha_Z_dd)
 
 !nu nu~ Z vertex for final state        
-        else if((abs(id(4)).eq.12).or.(abs(id(4)).eq.14).or.(abs(id(4)).eq.16))then
+        else if((abs(id(6)).eq.12).or.(abs(id(6)).eq.14).or.(abs(id(6)).eq.16))then
           current2=(0.5d0*T3nL - QnL*sitW**2) *Vcurrent2 -(0.5d0*T3nL)*Acurrent2
           current2=current2*gFFZ*dsqrt(scale_alpha_Z_nn)
 
@@ -207,13 +208,13 @@ contains
       endif
 !f+ f- Z vertex for final states END
 
-      call POLARIZATION(four_momentum(1,:), POL1)
-      call POLARIZATION(four_momentum(2,:), POL2)
+      call POLARIZATION(MomExt(:,3), POL1)
+      call POLARIZATION(MomExt(:,4), POL2)
    
 
 !ZZX vertex
-      q3_q3 = four_momentum(1,1)*four_momentum(1,1) -four_momentum(1,2)*four_momentum(1,2) -four_momentum(1,3)*four_momentum(1,3) -four_momentum(1,4)*four_momentum(1,4)
-      q4_q4 = four_momentum(2,1)*four_momentum(2,1) -four_momentum(2,2)*four_momentum(2,2) -four_momentum(2,3)*four_momentum(2,3) -four_momentum(2,4)*four_momentum(2,4)
+      q3_q3 = inv_mass(3)**2
+      q4_q4 = inv_mass(4)**2
       ghz1_dyn = ghz1   +   ghz1_prime * Lambda_z1**4/( Lambda_z1**2 + abs(q3_q3) )/( Lambda_z1**2 + abs(q4_q4))  &
                         +   ghz1_prime2* ( abs(q3_q3)+abs(q4_q4) )/Lambda_z1**2                                   &
                         +   ghz1_prime3* ( abs(q3_q3)+abs(q4_q4) )**2/Lambda_z1**4                                &
@@ -235,8 +236,8 @@ contains
                         +   ghz4_prime4* ( abs(q3_q3)*abs(q4_q4) )/Lambda_z4**4                                   &
                         +   ghz4_prime5* ( abs(q3_q3)-abs(q4_q4) )/Lambda_z4**2
 
-      gVVS1 = ghz1_dyn*(mass(1,1)**2) + qq * ( 2d0*ghz2_dyn + ghz3_dyn*qq/(Lambda*1d2) )
-      gVVS2 = -( 2d0*ghz2_dyn + ghz3_dyn*qq/(Lambda*1d2) )
+      gVVS1 = ghz1_dyn*(mass(3,1)**2) + qq * ( 2d0*ghz2_dyn + ghz3_dyn*qq/Lambda )
+      gVVS2 = -( 2d0*ghz2_dyn + ghz3_dyn*qq/Lambda )
       gVVP = -2d0*ghz4_dyn
 
       VVX0 = 0d0
@@ -246,16 +247,16 @@ contains
       endif
 
       if(gVVS2.ne.0d0)then
-        call VVS2(four_momentum(3,:),four_momentum(3,:),pp)
+        call VVS2(MomExt(:,5),MomExt(:,5),pp)
         VVX0 = VVX0 + gVVS2*pp
       endif
 
       if(gVVP.ne.0d0)then
-        call VVP(-four_momentum(1,:),four_momentum(2,:),epp)
+        call VVP(-MomExt(:,3),MomExt(:,4),epp)
         VVX0 = VVX0 + gVVP*epp
       endif
 
-      VVX0 = (0d0,1d0)/(vev*1d2)*VVX0
+      VVX0 = (0d0,1d0)/vev*VVX0
 
 
 ! assemble everything and get iM
@@ -277,10 +278,9 @@ contains
       enddo !lambda1
 
       MATRIXELEMENT0=MATRIXELEMENT0 *PROP1*PROP2*PROP3 &
-      *(gFFS*FFS(id(6), four_momentum(6,:), helicity(6), id(7), four_momentum(7,:), helicity(7)) &
-       +gFFP*FFP(id(6), four_momentum(6,:), helicity(6), id(7), four_momentum(7,:), helicity(7)))&
-        *(0d0,-1d0)*b_Yukawa/(vev*1d2)
-
+      *(gFFS*FFS(id(8), MomExt(:,8), helicity(8), id(9), MomExt(:,9), helicity(9)) &
+       +gFFP*FFP(id(8), MomExt(:,8), helicity(8), id(9), MomExt(:,9), helicity(9)))&
+        *(0d0,-1d0)*b_Yukawa/vev
 
       return
       END function MATRIXELEMENT0
@@ -317,13 +317,13 @@ contains
 
       subroutine ANGLES(sincos, vector)
       implicit none
-!     double precision Pi
-      double precision Twopi, Fourpi, epsilon
+!     real(8) Pi
+      real(8) Twopi, Fourpi, epsilon
 !     parameter( Pi = 3.14159265358979323846d0 )
       parameter( Twopi = 2d0 * Pi )
       parameter( Fourpi = 4d0 * Pi )
       parameter( epsilon = 1d-13 ) !a small quantity slightly above machine precision
-      double precision sincos(4), vector(4), abs3p, phi
+      real(8) sincos(4), vector(4), abs3p, phi
 !sincos(1)=cos(theta)
 !sincos(2)=sin(theta)
 !sincos(3)=cos(phi)
@@ -391,16 +391,16 @@ contains
       subroutine ANTISYMMETRIC2(p1,p2,epp)
 
       implicit none
-!     double precision Pi
-      double precision Twopi, Fourpi, epsilon
+!     real(8) Pi
+      real(8) Twopi, Fourpi, epsilon
 !     parameter( Pi = 3.14159265358979323846d0 )
       parameter( Twopi = 2d0 * Pi )
       parameter( Fourpi = 4d0 * Pi )
       parameter( epsilon = 1d-13 ) !a small quantity slightly above machine precision
 
-      double complex p1(4), p2(4)
-      double complex epp(4,4)
-!      double precision ANTISYMMETRIC
+      complex(8) p1(4), p2(4)
+      complex(8) epp(4,4)
+!      real(8) ANTISYMMETRIC
       integer i,j,k,l
 
 !      external ANTISYMMETRIC
@@ -449,7 +449,7 @@ contains
 !tensor.
 !ANTISYMMETRIC(0,1,2,3)=1.
 
-      double precision function ANTISYMMETRIC(i,j,k,l)
+      real(8) function ANTISYMMETRIC(i,j,k,l)
 
       implicit none
 !     include '../COMMON.INI'
@@ -489,15 +489,15 @@ contains
       subroutine CONTRA_FIELD_TENSOR(POL, T_mu_nu)
 
       implicit none
-!     double precision Pi
-      double precision Twopi, Fourpi, epsilon
+!     real(8) Pi
+      real(8) Twopi, Fourpi, epsilon
 !     parameter( Pi = 3.14159265358979323846d0 )
       parameter( Twopi = 2d0 * Pi )
       parameter( Fourpi = 4d0 * Pi )
       parameter( epsilon = 1d-13 ) !a small quantity slightly above machine precision
-      double complex epep(4,4),emem(4,4),epe0(4,4),eme0(4,4),e0e0(4,4)
-      double complex epem(4,4),e0ep(4,4),e0em(4,4),emep(4,4)
-      double complex POL(3,4), T_mu_nu(5,4,4)
+      complex(8) epep(4,4),emem(4,4),epe0(4,4),eme0(4,4),e0e0(4,4)
+      complex(8) epem(4,4),e0ep(4,4),e0em(4,4),emep(4,4)
+      complex(8) POL(3,4), T_mu_nu(5,4,4)
       
       call CONTRA_OUTER(POL(1,:), POL(1,:), epep)
       call CONTRA_OUTER(POL(2,:), POL(2,:), emem)
@@ -565,8 +565,8 @@ contains
 
       implicit none
 !     include '../COMMON.INI'
-      double complex p1(4), p2(4)
-      double complex pp(4,4)
+      complex(8) p1(4), p2(4)
+      complex(8) pp(4,4)
       integer mu, nu
 
       do mu=1,4
@@ -607,15 +607,15 @@ contains
       subroutine COVARIANT_FIELD_TENSOR(POL, T_mu_nu)
 
       implicit none
-!     double precision Pi
-      double precision Twopi, Fourpi, epsilon
+!     real(8) Pi
+      real(8) Twopi, Fourpi, epsilon
 !     parameter( Pi = 3.14159265358979323846d0 )
       parameter( Twopi = 2d0 * Pi )
       parameter( Fourpi = 4d0 * Pi )
       parameter( epsilon = 1d-13 ) !a small quantity slightly above machine precision
-      double complex epep(4,4),emem(4,4),epe0(4,4),eme0(4,4),e0e0(4,4)
-      double complex epem(4,4),e0ep(4,4),e0em(4,4),emep(4,4)
-      double complex POL(3,4), T_mu_nu(5,4,4)
+      complex(8) epep(4,4),emem(4,4),epe0(4,4),eme0(4,4),e0e0(4,4)
+      complex(8) epem(4,4),e0ep(4,4),e0em(4,4),emep(4,4)
+      complex(8) POL(3,4), T_mu_nu(5,4,4)
       
       call COVARIANT_OUTER(POL(1,:), POL(1,:), epep)
       call COVARIANT_OUTER(POL(2,:), POL(2,:), emem)
@@ -667,8 +667,8 @@ contains
 
       implicit none
 !     include '../COMMON.INI'
-      double complex p1(4), p2(4)
-      double complex pp(4,4)
+      complex(8) p1(4), p2(4)
+      complex(8) pp(4,4)
       integer mu, nu
 
       do mu=1,4
@@ -713,11 +713,11 @@ contains
 !returns the component of the COVARIANT vector for given 4-vector
 !and Lorentz index.
 
-      double complex function COVARIANT_VECTOR(p,mu)
+      complex(8) function COVARIANT_VECTOR(p,mu)
 
       implicit none
 
-      double complex p(4)
+      complex(8) p(4)
       integer mu
 
       if(mu.ne.1)then
@@ -757,14 +757,14 @@ contains
 
 !returns i.Psi~(p1,s1).gamma5.Psi(p2,s2) for massless states
 
-      double complex function FFP(pdg_code1, p1, h1, pdg_code2, p2, h2)
+      complex(8) function FFP(pdg_code1, p1, h1, pdg_code2, p2, h2)
 
       implicit none
-      double precision, parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
+      real(8), parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
       
-      double precision p1(4), p2(4), h1, h2
+      real(8) p1(4), p2(4), h1, h2
       integer pdg_code1, pdg_code2
-      double precision sqrt_pp1Dpp2
+      real(8) sqrt_pp1Dpp2
 
       if( ( dble(pdg_code1) *h1* dble(pdg_code2) *h2 ).gt.0d0)then
         FFP=0d0
@@ -818,12 +818,12 @@ contains
       subroutine FFA(pdg_code1, p1, h1, pdg_code2, p2, h2, Acurrent)
 
       implicit none
-      double precision, parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
+      real(8), parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
       
-      double precision p1(4), p2(4), h1, h2
+      real(8) p1(4), p2(4), h1, h2
       integer pdg_code1, pdg_code2
-      double precision sqrt_pp1Dpp2, sqrt_pp1Xpp2
-      double complex Acurrent(4)
+      real(8) sqrt_pp1Dpp2, sqrt_pp1Xpp2
+      complex(8) Acurrent(4)
       integer mu
 
       if( ( dble(pdg_code1) *h1* dble(pdg_code2) *h2 ).lt.0d0)then
@@ -906,14 +906,14 @@ contains
 
 !returns Psi~(p1,s1).Psi(p2,s2) for massless states
 
-      double complex function FFS(pdg_code1, p1, h1, pdg_code2, p2, h2)
+      complex(8) function FFS(pdg_code1, p1, h1, pdg_code2, p2, h2)
 
       implicit none
-      double precision, parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
+      real(8), parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
       
-      double precision p1(4), p2(4), h1, h2
+      real(8) p1(4), p2(4), h1, h2
       integer pdg_code1, pdg_code2
-      double precision sqrt_pp1Dpp2
+      real(8) sqrt_pp1Dpp2
 
       if( ( dble(pdg_code1) *h1* dble(pdg_code2) *h2 ).gt.0d0)then
         FFS=0d0
@@ -964,12 +964,12 @@ contains
       subroutine FFV(pdg_code1, p1, h1, pdg_code2, p2, h2, Vcurrent)
 
       implicit none
-      double precision, parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
+      real(8), parameter :: epsilon = 1d-13 !a small quantity slightly above machine precision
       
-      double precision p1(4), p2(4), h1, h2
+      real(8) p1(4), p2(4), h1, h2
       integer pdg_code1, pdg_code2
-      double precision sqrt_pp1Dpp2, sqrt_pp1Xpp2
-      double complex Vcurrent(4)
+      real(8) sqrt_pp1Dpp2, sqrt_pp1Xpp2
+      complex(8) Vcurrent(4)
       integer mu
 
       if( ( dble(pdg_code1) *h1* dble(pdg_code2) *h2 ).lt.0d0)then
@@ -1047,10 +1047,10 @@ contains
 
 !returns the (complex) inner product of p1 and p2, p1_mu p2^nu.
 
-      double complex function INNER(p1,p2)
+      complex(8) function INNER(p1,p2)
 
       implicit none
-      double complex p1(4), p2(4)
+      complex(8) p1(4), p2(4)
 
       INNER = p1(1)*p2(1) - p1(2)*p2(2) - p1(3)*p2(3) - p1(4)*p2(4)
 
@@ -1091,9 +1091,9 @@ contains
 
       implicit none
 
-      double precision vector(4), boost(4) 
-      double precision lambda(4,4), vector_copy(4)
-      double precision beta(2:4), beta_sq, gamma
+      real(8) vector(4), boost(4) 
+      real(8) lambda(4,4), vector_copy(4)
+      real(8) beta(2:4), beta_sq, gamma
       integer i,j
 
       do i=2,4
@@ -1155,7 +1155,7 @@ contains
 
 !KRONECKER_DELTA(i,j)
 !A function that returns 1 if i=j, and 0 otherwise.
-      double precision function KRONECKER_DELTA(i,j)
+      real(8) function KRONECKER_DELTA(i,j)
       integer i,j
       if(i.eq.j)then
         KRONECKER_DELTA = 1d0
@@ -1222,7 +1222,7 @@ contains
 !in METRIC returns the element of the Minkovski metric, with
 !signature (1,-1,-1,-1), for given (_mu, _nu) or given (^mu, ^nu).
 
-      double precision function METRIC(mu,nu)
+      real(8) function METRIC(mu,nu)
 
       implicit none
       integer mu, nu
@@ -1270,8 +1270,8 @@ contains
       subroutine POLARIZATION(p, POL)
 
       implicit none
-      double precision p(4), sincos(4), inv_mass, abs3p
-      double complex POL(3,4)
+      real(8) p(4), sincos(4), inv_mass, abs3p
+      complex(8) POL(3,4)
 !     integer lambda, mu
       
       call ANGLES(sincos, p)
@@ -1330,8 +1330,8 @@ contains
       subroutine POLARIZATIONA(p, POL)
 
       implicit none
-      double precision p(4), sincos(4), inv_mass, abs3p
-      double complex POL(2,4)
+      real(8) p(4), sincos(4), inv_mass, abs3p
+      complex(8) POL(2,4)
       
       call ANGLES(sincos, p)
 
@@ -1387,8 +1387,8 @@ contains
       subroutine POLARIZATIONX(p, POL)
 
       implicit none
-      double precision p(4), sincos(4), inv_mass, abs3p
-      double complex POL(3,4)
+      real(8) p(4), sincos(4), inv_mass, abs3p
+      complex(8) POL(3,4)
 !     integer lambda, mu
       
       call ANGLES(sincos, p)
@@ -1452,10 +1452,10 @@ contains
 !without tensor structure (numerator), given mass, invariant mass
 !and width.
 
-      double complex function PROPAGATOR(inv_mass, mass, width)
+      complex(8) function PROPAGATOR(inv_mass, mass, width)
       implicit none
 
-      double precision inv_mass, mass, width
+      real(8) inv_mass, mass, width
 
 !not assuming auto-conversion
 !     PROPAGATOR = (0d0,1d0)/(dcmplx(inv_mass**2,0d0)
@@ -1501,9 +1501,9 @@ contains
       subroutine VVP(p1,p2,epp)
 
       implicit none
-      double precision p1(4), p2(4)
-      double complex epp(4,4)
-!      double precision ANTISYMMETRIC
+      real(8) p1(4), p2(4)
+      complex(8) epp(4,4)
+!      real(8) ANTISYMMETRIC
       integer i,j,k,l
 
 !      external ANTISYMMETRIC
@@ -1553,7 +1553,7 @@ contains
       subroutine VVS1(g_mu_nu)
 
       implicit none
-      double complex g_mu_nu(4,4)
+      complex(8) g_mu_nu(4,4)
 
       g_mu_nu = 0d0
 
@@ -1596,8 +1596,8 @@ contains
       subroutine VVS2(p1,p2,pp)
 
       implicit none
-      double precision p1(4), p2(4)
-      double complex pp(4,4)
+      real(8) p1(4), p2(4)
+      complex(8) pp(4,4)
       integer mu, nu
 
       do mu=1,4
