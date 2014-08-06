@@ -12,12 +12,12 @@ ccomp = gcc
 
 
 
-Testprogram: mod_Higgs_MatEl.o mod_Zprime_MatEl.o mod_Graviton_MatEl.o mod_HiggsJJ_MatEl.o testprogram.F90 \
-	checkWBF_SM.dat checkWBF_1-8.dat checkSBF_SM.dat checkSBF_1-4.dat
+Testprogram: mod_Higgs_MatEl.o mod_Zprime_MatEl.o mod_Graviton_MatEl.o mod_HiggsJ_MatEl.o mod_HiggsJJ_MatEl.o mod_VHiggs_MatEl.o testprogram.F90 \
+	checkWBF_SM.dat checkWBF_1-8.dat checkSBF_SM.dat checkSBF_1-4.dat checkHJ_SM.dat checkZH_SM.dat
 	@echo " "
 	@echo " compiling and linking testprogram.F90 with "$(Comp)
-	$(fcomp) -o testF testprogram.F90 -lm mod_Higgs_MatEl.o mod_Zprime_MatEl.o mod_Graviton_MatEl.o mod_HiggsJJ_MatEl.o
-	@echo " "
+	$(fcomp) -o testF testprogram.F90 -lm mod_Higgs_MatEl.o mod_Zprime_MatEl.o mod_Graviton_MatEl.o mod_HiggsJ_MatEl.o mod_HiggsJJ_MatEl.o mod_VHiggs_MatEl.o
+#	@echo " "
 #	@echo " compiling and linking testprogram.c with gcc"
 #	$(ccomp) -o testC testprogram.c   -lm  -lgfortran  mod_Higgs_MatEl.o mod_Zprime_MatEl.o mod_Graviton_MatEl.o
 #	@echo " "
@@ -42,10 +42,20 @@ mod_Graviton_MatEl.o: mod_Graviton_MatEl.F90 includeVars.F90 variables.F90
 	@echo " compiling mod_Graviton_MatEl.F90 includeVars.F90 with "$(Comp)
 	$(fcomp) -c mod_Graviton_MatEl.F90  
 
+mod_HiggsJ_MatEl.o: mod_HiggsJ_MatEl.F90 variables.F90
+	@echo " "
+	@echo " compiling mod_HiggsJ_MatEl.F90 with "$(Comp)
+	$(fcomp) -c mod_HiggsJ_MatEl.F90
+
 mod_HiggsJJ_MatEl.o: mod_HiggsJJ_MatEl.F90 variables.F90
 	@echo " "
 	@echo " compiling mod_HiggsJJ_MatEl.F90 with "$(Comp)
-	$(fcomp) -c mod_HiggsJJ_MatEl.F90  
+	$(fcomp) -c mod_HiggsJJ_MatEl.F90
+
+mod_VHiggs_MatEl.o: mod_VHiggs_MatEl.F90 variables.F90
+	@echo " "
+	@echo " compiling mod_VHiggs_MatEl.F90 with "$(Comp)
+	$(fcomp) -c mod_VHiggs_MatEl.F90 
 
 clean:
 	@echo " deleting object files"
