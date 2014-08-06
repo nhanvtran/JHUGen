@@ -409,7 +409,7 @@ include "vegas_common.f"
       endif
       !- Hj, gluon fusion
       if(Process.eq.62) then
-         NDim = 5
+         NDim = 5+1 !1 for color flow ramdomization in gg > Hg
          NDim = NDim + 2 ! sHat integration
          VegasIt1_default = 5
          VegasNc0_default = 10000000

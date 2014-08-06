@@ -178,9 +178,15 @@ IF( GENEVT ) THEN
       ICOLUP(1:2,3) = (/000,000/)! H
 ! color assignments may need correction/randomization
       if( MY_IDUP(1).eq.Glu_ .and. MY_IDUP(2).eq.Glu_ ) then! gg->Hg
+        if(yRnd(10).gt.0.5d0)then
           ICOLUP(1:2,1) = (/502,501/)
-          ICOLUP(1:2,2) = (/503,502/)          
+          ICOLUP(1:2,2) = (/503,502/)
           ICOLUP(1:2,4) = (/503,501/)
+        else
+          ICOLUP(1:2,1) = (/501,502/)
+          ICOLUP(1:2,2) = (/502,503/)
+          ICOLUP(1:2,4) = (/501,503/)
+        endif
           MY_IDUP(4) = Glu_
       elseif( MY_IDUP(1).ne.Glu_ .and. MY_IDUP(1).gt.0 .and. MY_IDUP(2).eq.Glu_ ) then! qg->Hq
           ICOLUP(1:2,1) = (/502,000/)
